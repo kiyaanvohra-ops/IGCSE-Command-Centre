@@ -242,12 +242,12 @@ body.is-authenticated .auth-gate{display:none}
     catch(e){supabaseClient=null;throw new Error('Check your Supabase project URL and public key.')}
   }
   function statesEqual(a,b){return JSON.stringify(normalizeState(a))===JSON.stringify(normalizeState(b))}
-  async function fetchCloudState(){if(!supabaseClient||!cloudUser)throw new Error('Connect your Supabase project and sign in first.');const {data,error}=await supabaseClient.from('igcse_progress').select('state, updated_at').eq('user_id',cloudUser.id).maybeSingle();if(error)throw error;return data||null}
+  async function fetchCloudState(userId=cloudUser?.id){if(!supabaseClient||!userId)throw new Error('Connect your Supabase project and sign in first.');const {data,error}=await supabaseClient.from('igcse_progress').select('state, updated_at').eq('user_id',userId).maybeSingle();if(error)throw error;return data||null}
   async function loadCloudForUser(user){
     if(!user||cloudSyncBusy||!supabaseClient)return;
     cloudSyncBusy=true;lastCloudLoadFor=String(user.id);setCloudStatus('Loading your private progress…','warn');renderCloudUi();
     try{
-      const progress=await fetchCloudState();
+      const progress=await fetchCloudState(user.id);
       const knownUser=localStorage.getItem(KEY+'-cloud-user-id');
       const local=(knownUser&&String(knownUser)===String(user.id))?normalizeState(loadState()):defaultState();
       const remote=progress?.state?normalizeState(progress.state):null;

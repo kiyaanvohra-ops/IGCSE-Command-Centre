@@ -219,7 +219,8 @@ body.is-authenticated .auth-gate{display:none}
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   let toastTimer;function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2400)}
   function setCloudStatus(message,kind='warn'){cloudStatusText=message;cloudStatusKind=kind;const el=document.getElementById('cloudStatus');if(el){el.textContent=message;el.className='cloud-status '+kind}const gate=document.getElementById('authGateStatus');if(gate){gate.textContent=message;gate.className='auth-status '+(kind==='error'?'error':'')}}
-  function getSavedConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')}catch(e){return {}}}
+  const DEFAULT_SUPABASE_CONFIG={url:'https://wmjlwoibjurkrscilofb.supabase.co',key:'sb_publishable_H50AIvK2sW1mqFrh_OS5KQ_G5uPnLTa'};
+  function getSavedConfig(){try{const saved=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');if(saved.url===DEFAULT_SUPABASE_CONFIG.url&&saved.key===DEFAULT_SUPABASE_CONFIG.key)return saved;return DEFAULT_SUPABASE_CONFIG}catch(e){return DEFAULT_SUPABASE_CONFIG}}
   function renderCloudUi(){
     const logged=!!cloudUser, configured=!!supabaseClient;
     const status=document.getElementById('cloudStatus');if(status){status.textContent=cloudStatusText;status.className='cloud-status '+cloudStatusKind}
